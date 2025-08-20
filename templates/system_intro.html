@@ -1,0 +1,50 @@
+<!-- page 1 -->
+{% extends 'base.html' %}
+
+{% block script %}
+<script>
+    function fn1(){
+        window.location="tank_check";
+    }
+</script>
+ {% endblock %}
+
+
+{% block main_text %}
+<div class="grid-content">
+
+    <div class="left-part">
+        <br>
+        <div class="container">
+            <img src="{{ url_for('static', filename='img/tankex.jpg') }}" 
+            alt="Example Image" 
+            style="width: 80%; height: auto; ">
+        </div>
+    </div>
+
+    <div class="right-part">
+        <p class="t_title">
+    You are an engineer assigned to maintenance duties aboard the spaceship. 
+    One of your critical responsibilities is to ensure the proper functioning of the oxygen system.
+
+    An essential lesson to remember is that if the alarm sounds, you must inspect the maintenance system immediately. 
+    A troubleshooting technique involves comparing the two oxygen tanks: <b>External</b> and <b>Internal</b>.</br></br>
+    
+    The tank level is shown with the numbers on the tank. In the picture, the External tank has significantly lower levels than the Internal tank, this indicates 
+    failures caused by external threats, such as radiation from space.
+
+    Conversely, if the Internal tank is much lower than the External tank, this suggests internal maintenance issues.
+</p>
+<br>
+<button onclick="fn1()" id="btn1" class = "continue-btn">Continue</button>
+    </div>
+
+</div>
+<br><br>
+
+
+{% endblock %}
+
+{% block continue %}
+
+{% endblock %}

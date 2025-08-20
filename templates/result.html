@@ -1,0 +1,50 @@
+<!-- page 7 -->
+{% extends 'base.html' %}
+
+{% block script %}
+<script>
+    function fn1(){
+        window.location="emo";
+    }
+</script>
+{% endblock %}
+
+{% block main_text %}
+
+<!-- {% if error %}
+<div style="color: red; margin-bottom: 20px;">{{ error }}</div>
+
+{% endif %} -->
+
+<div class="grid-content">
+    <div class="left-part">
+        <br>
+        <div class="container">
+        <img src="{{ url_for('static', filename='img/fix_result.jpg') }}" alt="Example Image" 
+        style="width: 100%; height: auto;">
+        </div>
+    </div>
+    <div class="right-part">
+        <p class="t_title">
+
+            You discover that the failure was caused by a random cosmic ray strike, 
+            a rare but devastating event in deep space. The strike has irreparably damaged 
+            key components of the oxygen supply system, leaving the crew with limited options. 
+             Despite your collective expertise and tireless efforts to repair the system, 
+             it becomes increasingly evident that the damage is beyond anyone's ability to fix.
+        <br>
+        </p>
+        <br>
+        <button onclick="fn1()" id="btn1" class = "continue-btn">Continue</button>
+    </div>
+</div>
+
+
+
+
+<br>
+
+{% endblock %}
+{% block continue %}
+
+{% endblock %}

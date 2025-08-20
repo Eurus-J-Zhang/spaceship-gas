@@ -1,0 +1,35 @@
+<!-- page 9 -->
+{% extends 'base.html' %}
+
+{% block main_text %}
+
+<p class="t_title">
+
+    Finally we ask you to recall what have happened on the spaceship:
+
+<form method="POST" action="">
+    {{ form.hidden_tag() }}
+    
+    <!-- Question 1 -->
+    <td>What/Who caused the problem?<br></td>
+    {% for subfield in form.agent %}
+        <label>
+            {{ subfield }}{{ subfield.label.text }}
+        </label><br>
+    {% endfor %}
+    
+    <!-- Question 2 -->
+    <td>Is there anything you can do to solve the problem?<br></td>
+    {% for subfield in form.power %}
+        <label>
+            {{ subfield }}{{ subfield.label.text }}
+        </label><br>
+    {% endfor %}
+    
+    <!-- Submit Button -->
+    <input type="submit" value="Submit" class = "continue-btn">
+</form>
+
+</p>
+
+{% endblock %}
