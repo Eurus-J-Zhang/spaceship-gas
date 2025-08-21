@@ -6,7 +6,7 @@
 {% if session.get('is_correct') is not none %}
     <script>
         window.onload = function() {
-            let message = "{% if session.get('is_correct') %}Yes, you are correct!{% else %}No, you are wrong.{% endif %}";
+            let message = "{% if session.get('is_correct') %}Yes, you are correct!{% else %}No, you are wrong. You should choose B. Decrease oxygen by 1% {% endif %}";
             alert(message); // Show the message in an alert
 
             setTimeout(() => {
@@ -22,7 +22,7 @@
         <br>
     <div class="container">
         
-        <img src="{{ url_for('static', filename='img/tankin.jpg') }}" 
+        <!-- <img src="{{ url_for('static', filename='img/tankin.jpg') }}"  -->
         alt="Example Image" 
         style="width: 80%; height: auto; ">
     </div>
@@ -30,8 +30,20 @@
     </div>
     <div class="right-part">
         <p class="t_title">
-            Let's try it out! If the alarm rings and you saw the situation below, what could be the cause of the problem?
-        
+            The situation in the spaceship will be similar but more complicated. This is a simple example exercise to get you ready. Let's try it out! 
+             <p>The <strong>standard ranges</strong> aboard the spaceship are:</p>
+  <ul>
+    <li><strong>Oxygen:</strong> <mark>20–22%</mark></li>
+    <li><strong>Carbon dioxide (CO<sub>2</sub>):</strong> <mark>0.4–0.8%</mark></li>
+  </ul>
+
+  <p><strong>Current levels:</strong> Oxygen <mark>23%</mark>, Carbon dioxide (CO<sub>2</sub>) 
+    <mark>0.6%</mark>.</p>
+
+  <p>Your task: <strong>calculate the needed adjustment</strong> and select the button that 
+    best returns the gases to the standard ranges. Choose an action to continue.</p>
+
+
             <form method="POST" action="">
                 {{ form.hidden_tag() }}
         

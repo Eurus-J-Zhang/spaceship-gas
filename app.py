@@ -9,8 +9,8 @@ pymysql.install_as_MySQLdb()
 
 def create_app():
     app = Flask(__name__)
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('JAWSDB_URL')   
-    # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
+    # app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('JAWSDB_URL')   
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
     app.config['SECRET_KEY'] = "iloveeurus"
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -28,6 +28,13 @@ def handle_form_submission(form, session_key, next_page):
         session[session_key] = data
         return redirect(next_page)
     return None
+
+ACTION_DELTAS = {
+    "A": ( +0.5, +0.5),  # Close Loop
+    "B": ( -0.5, -0.5),  # Vent
+    "C": ( +1.0, -1.0),  # Inject & Scrub
+    "D": ( -1.0, +1.0),  # Recycle
+}
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -80,7 +87,7 @@ def system_intro():
 @app.route('/tank_check', methods=['GET', 'POST'])
 def tank_check():
     form = TankForm()
-    CORRECT_ANSWER = "Int"
+    CORRECT_ANSWER = "B"
 
     if request.method == "POST":
         if form.validate_on_submit():
@@ -112,11 +119,35 @@ def alarm_day():
 # P6
 @app.route('/tank_reason', methods=['GET', 'POST'])
 def tank_reason():
+    session.setdefault("oxygen", 19.0)
+    session.setdefault("co2", 0.6)
+
     form = ReasonForm()
-    response = handle_form_submission(form, 'tank_reason_data', 'result')
-    if response:
-        return response
-    return render_template('tank_reason.html',form = form)
+    if request.method == "POST" and form.validate_on_submit():
+        action = form.tank_reason.data
+        d_o2, d_co2 = ACTION_DELTAS[action]
+
+        trial_o2 = round(session["oxygen"] + d_o2, 1)
+        trial_co2 = round(session["co2"] + d_co2, 1)
+
+        # Prevent below zero
+        if trial_o2 < 0 or trial_co2 < 0:
+            form.tank_reason.errors.append("Invalid action: a gas level would drop below 0%.")
+        else:
+            session["oxygen"] = trial_o2
+            session["co2"] = trial_co2
+            return redirect(url_for("tank_reason"))  # PRG pattern
+
+    return render_template(
+        "tank_reason.html",
+        form=form,
+        oxygen=session["oxygen"],
+        co2=session["co2"],
+    )
+    # response = handle_form_submission(form, 'tank_reason_data', 'result')
+    # if response:
+    #     return response
+    # return render_template('tank_reason.html',form = form)
 
 # P7
 @app.route('/result')

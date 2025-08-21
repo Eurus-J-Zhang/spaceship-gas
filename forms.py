@@ -14,11 +14,15 @@ eleven_point_scale = [(str(i), f'Opt{i}') for i in range(11)]
 
 # tank check
 class TankForm(FlaskForm):
-    tank_practice = RadioField('Practice', choices=[('Ext','External factors (like radiations)'),('Int','Internal factors (like human maintenance error)')], validators=[DataRequired()])
+    tank_practice = RadioField('Practice', choices=[('A','A. Increase oxygen by 1%'),('B','B. Decrease oxygen by 1%'),
+                                                    ('C','C. Increase carbon dioxide by 0.2%'),('D','D. Decrease carbon dioxide by 0.2%')], validators=[DataRequired()])
 
 # tank reason
 class ReasonForm(FlaskForm):
-    tank_reason = RadioField('Reason', choices=[('Ext','External natural threats'),('Int','Internal maintenance issues'),('NA','Not sure.')], validators=[DataRequired()])
+    tank_reason = RadioField('Reason', choices=[('A','A. Close Loop (O₂+0.5, CO₂+0.5)'),
+                                                ('B','B. Vent (O₂−0.5, CO₂−0.5)'),
+                                                ('C','C. Inject & Scrub (O₂+1, CO₂−1)'),
+                                                ('D','D. Recycle (O₂−1, CO₂+1)')], validators=[DataRequired()])
 
 
 # Emotion check
