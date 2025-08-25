@@ -9,9 +9,6 @@ class DemographicInfo(FlaskForm):
     gender = RadioField('Gender', choices=[('M','Male'),('F','Female'),('O','Others')], validators=[DataRequired()])
     age = IntegerField('Age', validators=[DataRequired(), NumberRange(min=18, max=80)])
 
-
-
-
 # tank check
 class TankForm(FlaskForm):
     tank_practice = RadioField('Practice', choices=[('A','A. Increase oxygen by 1%'),('B','B. Decrease oxygen by 1%'),
@@ -23,16 +20,6 @@ class ReasonForm(FlaskForm):
                                                 ('B','B. Vent (O₂−0.5, CO₂−0.5)'),
                                                 ('C','C. Inject & Scrub (O₂+1, CO₂−1)'),
                                                 ('D','D. Recycle (O₂−1, CO₂+1)')], validators=[DataRequired()])
-
-
-# Emotion check
-# class EmotionForm(FlaskForm):
-#     competence = RadioField('Competence', choices=eleven_point_scale, validators=[DataRequired()])
-#     joy = RadioField('Joy', choices=eleven_point_scale, validators=[DataRequired()])
-#     irritation = RadioField('Irritation', choices=eleven_point_scale, validators=[DataRequired()])
-#     boredom = RadioField('Boredom', choices=eleven_point_scale, validators=[DataRequired()])
-    
-#     feedback = StringField('',validators=[DataRequired()],widget=TextArea())
 
 # Here is the first emotion check
 eleven_point_scale = [(str(i), f'Opt{i}') for i in range(11)]
@@ -59,9 +46,3 @@ class EmotionFormPost(FlaskForm):
     emo2_shame = RadioField('Shame', choices=eleven_point_scale_change, validators=[DataRequired()])  
     
     feedback2 = StringField('',validators=[DataRequired()],widget=TextArea())
-
-
-# Appraisal Check
-class AppraisalForm(FlaskForm):
-    agent = RadioField('Agent', choices=[('Nature','Nature'),('Others','Another crew member'),('Self','Yourself')], validators=[DataRequired()])
-    power = RadioField('Power', choices=[('Y','Yes'),('N','No')], validators=[DataRequired()])

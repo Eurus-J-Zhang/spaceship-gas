@@ -1,6 +1,6 @@
 from flask import Flask,render_template,url_for,request, redirect, send_from_directory, session, flash
 from flask_migrate import Migrate
-from forms import EmotionFormPre, EmotionFormPost, DemographicInfo, AppraisalForm, TankForm, ReasonForm
+from forms import EmotionFormPre, EmotionFormPost, DemographicInfo, TankForm, ReasonForm
 import os
 import pymysql
 from models import db, Data
@@ -9,8 +9,8 @@ pymysql.install_as_MySQLdb()
 
 def create_app():
     app = Flask(__name__)
-    # app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('JAWSDB_URL')   
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('JAWSDB_URL')   
+    # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
     app.config['SECRET_KEY'] = "iloveeurus"
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -41,6 +41,7 @@ def index():
     session.pop("oxygen", None)
     session.pop("co2", None)
     session.pop("history_data", None)
+    session['result'] = None
     form = DemographicInfo()
     response = handle_form_submission(form, 'index_data', 'emo_pre')
     if response:  
@@ -51,21 +52,11 @@ def index():
 @app.route('/emo_pre', methods=['GET', 'POST'])
 def emo_pre():
     form = EmotionFormPre()
-    
     response = handle_form_submission(form, 'emo_pre_data', 'system_intro')
     if response:  
         return response
     return render_template('emo_pre.html', form=form)
 
-
-# # p8
-# @app.route('/emo', methods=['GET', 'POST'])
-# def emo():
-#     form = EmotionForm()
-#     response = handle_form_submission(form, 'emo_data', 'appraisal')
-#     if response:  # Check if the form was valid and a redirect response was returned
-#         return response
-#     return render_template('emo.html',form=form)
 
 
 # p9
@@ -76,18 +67,18 @@ def emo_post():
     if form.validate_on_submit():
         data = form.data
         data.pop('csrf_token', None)
-        session['appraisal_data'] = data
+        session['emo_post_data'] = data
 
         index_data = session.get('index_data')
         tank_practice_data = session.get('tank_practice_data')
-        # tank_reason_data = session.get('tank_reason_data')
-        # step_data = session.get('')
         history_data = session.get('history_data')
-        emo_data = session.get('emo_data')
-        appraisal_data = session.get('appraisal_data')
+        history_str = ",".join(history_data)
+        emo_pre_data = session.get('emo_pre_data')
+        emo_post_data = session.get('emo_post_data')
+        result_data = session.get('result')
 
-        combined_data = {**index_data,**tank_practice_data, **history_data, 
-                         **emo_data, **appraisal_data}
+        combined_data = {**index_data,**tank_practice_data, "history": history_str, "result":result_data,
+                         **emo_pre_data, **emo_post_data}
         data = Data(**combined_data)
         db.session.add(data)
         db.session.commit()
@@ -227,11 +218,13 @@ def tank_reason():
 # P7
 @app.route('/result_success')
 def result_success():
+    session['result']='success'  # record the result
     return render_template('result_success.html')
 
 # P8
 @app.route('/result_fail')
 def result_fail():
+    session['result']='fail'  # record the result
     return render_template('result_fail.html')
 
 # end page
