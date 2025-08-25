@@ -4,7 +4,7 @@
 {% block script %}
 <script>
     function fn1(){
-        window.location="emo";
+        window.location="emo_post";
     }
 </script>
 {% endblock %}
@@ -20,18 +20,15 @@
     <div class="left-part">
         <br>
         <div class="container">
-        <img src="{{ url_for('static', filename='img/fix_result.jpg') }}" alt="Example Image" 
-        style="width: 100%; height: auto;">
+        <img src="{{ url_for('static', filename='img/success.jpg') }}" alt="Example Image" 
+        style="width: 90%; height: auto;">
         </div>
     </div>
     <div class="right-part">
         <p class="t_title">
-
-            You discover that the failure was caused by a random cosmic ray strike, 
-            a rare but devastating event in deep space. The strike has irreparably damaged 
-            key components of the oxygen supply system, leaving the crew with limited options. 
-             Despite your collective expertise and tireless efforts to repair the system, 
-             it becomes increasingly evident that the damage is beyond anyone's ability to fix.
+            Congratulations! </br>
+            You’ve successfully reached the goal in the minimum number of steps. 
+            Please continue to complete a short questionnaire.
         <br>
         </p>
         <br>

@@ -1,6 +1,6 @@
 from flask import Flask,render_template,url_for,request, redirect, send_from_directory, session, flash
 from flask_migrate import Migrate
-from forms import EmotionForm, DemographicInfo, AppraisalForm, TankForm, ReasonForm
+from forms import EmotionFormPre, EmotionFormPost, DemographicInfo, AppraisalForm, TankForm, ReasonForm
 import os
 import pymysql
 from models import db, Data
@@ -38,26 +38,40 @@ ACTION_DELTAS = {
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
+    session.pop("oxygen", None)
+    session.pop("co2", None)
+    session.pop("history_data", None)
     form = DemographicInfo()
-    response = handle_form_submission(form, 'index_data', 'system_intro')
+    response = handle_form_submission(form, 'index_data', 'emo_pre')
     if response:  
         return response
     return render_template('index.html',form=form)
 
-# p8
-@app.route('/emo', methods=['GET', 'POST'])
-def emo():
-    form = EmotionForm()
-    response = handle_form_submission(form, 'emo_data', 'appraisal')
-    if response:  # Check if the form was valid and a redirect response was returned
+
+@app.route('/emo_pre', methods=['GET', 'POST'])
+def emo_pre():
+    form = EmotionFormPre()
+    
+    response = handle_form_submission(form, 'emo_pre_data', 'system_intro')
+    if response:  
         return response
-    return render_template('emo.html',form=form)
+    return render_template('emo_pre.html', form=form)
+
+
+# # p8
+# @app.route('/emo', methods=['GET', 'POST'])
+# def emo():
+#     form = EmotionForm()
+#     response = handle_form_submission(form, 'emo_data', 'appraisal')
+#     if response:  # Check if the form was valid and a redirect response was returned
+#         return response
+#     return render_template('emo.html',form=form)
 
 
 # p9
-@app.route('/appraisal', methods=['GET', 'POST'])
-def appraisal():
-    form = AppraisalForm()
+@app.route('/emo_post', methods=['GET', 'POST'])
+def emo_post():
+    form = EmotionFormPost()
 
     if form.validate_on_submit():
         data = form.data
@@ -66,17 +80,45 @@ def appraisal():
 
         index_data = session.get('index_data')
         tank_practice_data = session.get('tank_practice_data')
-        tank_reason_data = session.get('tank_reason_data')
+        # tank_reason_data = session.get('tank_reason_data')
+        # step_data = session.get('')
+        history_data = session.get('history_data')
         emo_data = session.get('emo_data')
         appraisal_data = session.get('appraisal_data')
 
-        combined_data = {**index_data,**tank_practice_data, **tank_reason_data, 
+        combined_data = {**index_data,**tank_practice_data, **history_data, 
                          **emo_data, **appraisal_data}
         data = Data(**combined_data)
         db.session.add(data)
         db.session.commit()
         return redirect(url_for("ending")) 
-    return render_template('appraisal.html',form=form)
+    return render_template('emo_post.html',form=form)
+
+# # p9
+# @app.route('/appraisal', methods=['GET', 'POST'])
+# def appraisal():
+#     form = AppraisalForm()
+
+#     if form.validate_on_submit():
+#         data = form.data
+#         data.pop('csrf_token', None)
+#         session['appraisal_data'] = data
+
+#         index_data = session.get('index_data')
+#         tank_practice_data = session.get('tank_practice_data')
+#         # tank_reason_data = session.get('tank_reason_data')
+#         step_data = session.get('')
+#         history_data = session.get('history_data')
+#         emo_data = session.get('emo_data')
+#         appraisal_data = session.get('appraisal_data')
+
+#         combined_data = {**index_data,**tank_practice_data, **history_data, 
+#                          **emo_data, **appraisal_data}
+#         data = Data(**combined_data)
+#         db.session.add(data)
+#         db.session.commit()
+#         return redirect(url_for("ending")) 
+#     return render_template('appraisal.html',form=form)
 
 # P1
 @app.route('/system_intro')
@@ -116,33 +158,66 @@ def day_choice():
 def alarm_day():
     return render_template('alarm_day.html')
 
-# P6
 @app.route('/tank_reason', methods=['GET', 'POST'])
 def tank_reason():
     session.setdefault("oxygen", 19.0)
     session.setdefault("co2", 0.6)
+    session.setdefault("history_data", [])
 
     form = ReasonForm()
-    if request.method == "POST" and form.validate_on_submit():
-        action = form.tank_reason.data
-        d_o2, d_co2 = ACTION_DELTAS[action]
 
-        trial_o2 = round(session["oxygen"] + d_o2, 1)
-        trial_co2 = round(session["co2"] + d_co2, 1)
+    # Success state (use session values)
+    success = (20.0 <= session["oxygen"] <= 22.0) and (0.4 <= session["co2"] <= 0.8)
+    step_number = len(session["history_data"])
+    failed = step_number >= 6 and not success  # fail if you hit 6 steps without success
 
-        # Prevent below zero
-        if trial_o2 < 0 or trial_co2 < 0:
-            form.tank_reason.errors.append("Invalid action: a gas level would drop below 0%.")
+    if request.method == "POST":
+        # If already successful, don't validate (no radios present) — just continue to result
+        if success:
+            # step_number=len(history)
+            return redirect(url_for("result_success"))
+        if failed:
+            return redirect(url_for("result_fail"))
+
+        # Otherwise, we expect a radio choice; validate and apply action
+        if form.validate_on_submit():
+            action = form.tank_reason.data
+            d_o2, d_co2 = ACTION_DELTAS[action]
+
+            trial_o2 = round(session["oxygen"] + d_o2, 1)
+            trial_co2 = round(session["co2"] + d_co2, 1)
+
+            if trial_o2 < 0 or trial_co2 < 0:
+                form.tank_reason.errors.append(
+                    "Invalid action: a gas level would drop below 0%."
+                )
+            else:
+                session["oxygen"] = trial_o2
+                session["co2"] = trial_co2
+                # record action in history
+                history = session.get("history_data", [])
+                history.append(action)   # just the action name (A/B/C/D)
+                session["history_data"] = history
+                return redirect(url_for("tank_reason"))
         else:
-            session["oxygen"] = trial_o2
-            session["co2"] = trial_co2
-            return redirect(url_for("tank_reason"))  # PRG pattern
+            # No selection submitted (e.g., user clicked Continue without choosing)
+            # Only add this error when not in success mode.
+            if not form.tank_reason.data:
+                form.tank_reason.errors.append("Please select an action.")
+
+    actions = session.get("history_data", [])
+    step_number = len(actions)
+    actions_str = ", ".join(actions) if actions else "None"
 
     return render_template(
         "tank_reason.html",
         form=form,
         oxygen=session["oxygen"],
         co2=session["co2"],
+        success=success,
+        failed=failed,
+        step_number=step_number,
+        actions_str=actions_str,
     )
     # response = handle_form_submission(form, 'tank_reason_data', 'result')
     # if response:
@@ -150,9 +225,14 @@ def tank_reason():
     # return render_template('tank_reason.html',form = form)
 
 # P7
-@app.route('/result')
-def result():
-    return render_template('result.html')
+@app.route('/result_success')
+def result_success():
+    return render_template('result_success.html')
+
+# P8
+@app.route('/result_fail')
+def result_fail():
+    return render_template('result_fail.html')
 
 # end page
 @app.route('/ending')

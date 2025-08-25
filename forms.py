@@ -9,7 +9,7 @@ class DemographicInfo(FlaskForm):
     gender = RadioField('Gender', choices=[('M','Male'),('F','Female'),('O','Others')], validators=[DataRequired()])
     age = IntegerField('Age', validators=[DataRequired(), NumberRange(min=18, max=80)])
 
-eleven_point_scale = [(str(i), f'Opt{i}') for i in range(11)]
+
 
 
 # tank check
@@ -26,15 +26,40 @@ class ReasonForm(FlaskForm):
 
 
 # Emotion check
-class EmotionForm(FlaskForm):
-    despair = RadioField('Despair', choices=eleven_point_scale, validators=[DataRequired()])
-    anxiety = RadioField('Anxiety', choices=eleven_point_scale, validators=[DataRequired()])
-    irritation = RadioField('Irritation', choices=eleven_point_scale, validators=[DataRequired()])
-    rage = RadioField('Rage', choices=eleven_point_scale, validators=[DataRequired()])
-    shame = RadioField('Shame', choices=eleven_point_scale, validators=[DataRequired()]) 
-    guilt = RadioField('Guilt', choices=eleven_point_scale, validators=[DataRequired()])  
+# class EmotionForm(FlaskForm):
+#     competence = RadioField('Competence', choices=eleven_point_scale, validators=[DataRequired()])
+#     joy = RadioField('Joy', choices=eleven_point_scale, validators=[DataRequired()])
+#     irritation = RadioField('Irritation', choices=eleven_point_scale, validators=[DataRequired()])
+#     boredom = RadioField('Boredom', choices=eleven_point_scale, validators=[DataRequired()])
     
-    feedback = StringField('',validators=[DataRequired()],widget=TextArea())
+#     feedback = StringField('',validators=[DataRequired()],widget=TextArea())
+
+# Here is the first emotion check
+eleven_point_scale = [(str(i), f'Opt{i}') for i in range(11)]
+eleven_point_scale_change = [(str(i), f'Opt{i}') for i in range(-5, 6)]
+
+class EmotionFormPre(FlaskForm):
+    emo1_competence = RadioField('Competence', choices=eleven_point_scale, validators=[DataRequired()])
+    emo1_joy = RadioField('Joy', choices=eleven_point_scale, validators=[DataRequired()])
+    emo1_pride = RadioField('Pride', choices=eleven_point_scale, validators=[DataRequired()])
+    emo1_boredom = RadioField('Boredom', choices=eleven_point_scale, validators=[DataRequired()])
+    emo1_irritation = RadioField('Irritation', choices=eleven_point_scale, validators=[DataRequired()]) 
+    emo1_anxiety = RadioField('Anxiety', choices=eleven_point_scale, validators=[DataRequired()])  
+    emo1_shame = RadioField('Shame', choices=eleven_point_scale, validators=[DataRequired()])  
+    
+    feedback1 = StringField('',validators=[DataRequired()],widget=TextArea())
+
+class EmotionFormPost(FlaskForm):
+    emo2_competence = RadioField('Competence', choices=eleven_point_scale_change, validators=[DataRequired()])
+    emo2_joy = RadioField('Joy', choices=eleven_point_scale_change, validators=[DataRequired()])
+    emo2_pride = RadioField('Pride', choices=eleven_point_scale_change, validators=[DataRequired()])
+    emo2_boredom = RadioField('Boredom', choices=eleven_point_scale_change, validators=[DataRequired()])
+    emo2_irritation = RadioField('Irritation', choices=eleven_point_scale_change, validators=[DataRequired()]) 
+    emo2_anxiety = RadioField('Anxiety', choices=eleven_point_scale_change, validators=[DataRequired()])  
+    emo2_shame = RadioField('Shame', choices=eleven_point_scale_change, validators=[DataRequired()])  
+    
+    feedback2 = StringField('',validators=[DataRequired()],widget=TextArea())
+
 
 # Appraisal Check
 class AppraisalForm(FlaskForm):

@@ -10,17 +10,17 @@ class Data(db.Model):
 
     tank_practice = db.Column(db.String(10))
     
-    tank_reason = db.Column(db.String(10))
+    history = db.Column(db.String(255), nullable=False)
 
-    despair = db.Column(db.Integer)
-    anxiety = db.Column(db.Integer)
+    competence = db.Column(db.Integer)
+    joy = db.Column(db.Integer)
     irritation = db.Column(db.Integer)
-    rage = db.Column(db.Integer)
-    shame = db.Column(db.Integer)
-    guilt = db.Column(db.Integer)
+    boredom = db.Column(db.Integer)
 
     feedback = db.Column(db.String(600))
 
     agent = db.Column(db.String(10))
     power = db.Column(db.String(10))
     
+
+    # so the names here will be in the database

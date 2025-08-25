@@ -44,14 +44,14 @@
       </tr>
       <tr>
 
-          <td>{{ form.despair.label }}</td>
-          {% for subfield in form.despair %}
+          <td>{{ form.competence.label }}</td>
+          {% for subfield in form.competence %}
           <td><div class="radio-button">{{ subfield }}</div></td>
           {% endfor %}
       </tr>
       <tr>
-        <td>{{ form.anxiety.label }}</td>
-        {% for subfield in form.anxiety %}
+        <td>{{ form.joy.label }}</td>
+        {% for subfield in form.joy %}
         <td><div class="radio-button">{{ subfield }}</div></td>
         {% endfor %}
     </tr>
@@ -62,23 +62,11 @@
         {% endfor %}
     </tr>
       <tr>
-          <td>{{ form.rage.label }}</td>
-          {% for subfield in form.rage %}
+          <td>{{ form.boredom.label }}</td>
+          {% for subfield in form.boredom %}
           <td><div class="radio-button">{{ subfield }}</div></td>
           {% endfor %}
       </tr>
-      <tr>
-        <td>{{ form.shame.label }}</td>
-        {% for subfield in form.shame %}
-        <td><div class="radio-button">{{ subfield }}</div></td>
-        {% endfor %}
-      </tr>
-      <tr>
-        <td>{{ form.guilt.label }}</td>
-        {% for subfield in form.guilt %}
-        <td><div class="radio-button">{{ subfield }}</div></td>
-        {% endfor %}
-    </tr>
   </table>
 <br>
 
