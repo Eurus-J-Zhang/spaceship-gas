@@ -10,7 +10,7 @@ pymysql.install_as_MySQLdb()
 def create_app():
     app = Flask(__name__)
     app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('JAWSDB_URL')   
-    # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
+    # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db' 
     app.config['SECRET_KEY'] = "iloveeurus"
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -142,7 +142,6 @@ def tank_reason():
     if request.method == "POST":
         # If already successful, don't validate (no radios present) — just continue to result
         if success:
-            # step_number=len(history)
             return redirect(url_for("result_success"))
         if failed or failed_step:
             return redirect(url_for("result_fail"))
