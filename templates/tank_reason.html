@@ -25,7 +25,7 @@
 You will only succeed when both gas levels fall within the standard ranges, achieved in the fewest steps possible.</p>
  <p>
 Any action that would drop a gas level below 0 is <strong>invalid</strong> and cannot be performed.
-If you take more than <mark>5</mark> actions without reaching the goal, the task ends automatically in <strong>failure</strong>.
+If you have taken <mark>5</mark> actions without reaching the goal, the task ends automatically in <strong>failure</strong>.
 </p>
 
   <p>Please calculate first, then begin taking actions.</p>
@@ -45,83 +45,81 @@ If you take more than <mark>5</mark> actions without reaching the goal, the task
   
 
 
-<div class="status-panel">
-    {% if success %}
-  <div class="banner banner-success" role="status">
-    ✅ The target is reached! Both oxygen and CO₂ are within the safe range. Please continue.
-  </div>
-{% elif failed %}
-  <div class="banner banner-fail" role="alert">
-    ⚠️ You have taken more than 5 steps without reaching the goal. Please continue.
-  </div>
-{% endif %}
-  <table class="gas-table">
-    <thead>
-      <tr>
-        <th>Gas</th>
-        <th>Standard Range</th>
-        <th>Current Level</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>Oxygen (O<sub>2</sub>)</td>
-        <td>20–22%</td>
-        <td><mark>{{ "%.1f"|format(oxygen) }}%</mark></td>
-      </tr>
-      <tr>
-        <td>Carbon Dioxide (CO<sub>2</sub>)</td>
-        <td>0.4–0.8%</td>
-        <td><mark>{{ "%.1f"|format(co2) }}%</mark></td>
-      </tr>
-    </tbody>
-  </table>
+  <div class="status-panel">
+      {% if success %}
+    <div class="banner banner-success" role="status">
+      ✅ The target is reached! Both oxygen and CO₂ are within the safe range. Please continue.
+    </div>
+  {% elif failed %}
+    <div class="banner banner-fail" role="alert">
+      ⚠️ You have taken more than 5 steps without reaching the goal. Please continue.
+    </div>
+    {% elif failed_step %}
+    <div class="banner banner-fail" role="alert">
+      ⚠️ You reached the goal but not with the minimal steps. Please continue.
+    </div>
 
-  <div class="status-box">
-    <p>
-      <strong>Action step:</strong> {{ step_number }}
-      &nbsp;&nbsp;
-      <strong>Actions chosen:</strong> {{ actions_str }}
-    </p>
-  </div>
+  {% endif %}
+    <table class="gas-table">
+      <thead>
+        <tr>
+          <th>Gas</th>
+          <th>Standard Range</th>
+          <th>Current Level</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Oxygen (O<sub>2</sub>)</td>
+          <td>20–22%</td>
+          <td><mark>{{ "%.1f"|format(oxygen) }}%</mark></td>
+        </tr>
+        <tr>
+          <td>Carbon Dioxide (CO<sub>2</sub>)</td>
+          <td>0.4–0.8%</td>
+          <td><mark>{{ "%.1f"|format(co2) }}%</mark></td>
+        </tr>
+      </tbody>
+    </table>
 
-  <form method="POST" action="">
-    {{ form.hidden_tag() }}
+    <div class="status-box">
+      <p>
+        <strong>Action step:</strong> {{ step_number }}
+        &nbsp;&nbsp;
+        <strong>Actions chosen:</strong> {{ actions_str }}
+      </p>
+    </div>
 
-    {% if form.tank_reason.errors %}
-      <div class="form-error" role="alert">
-        {% for e in form.tank_reason.errors %}
-          <p>{{ e }}</p>
-        {% endfor %}
+    <form method="POST" action="">
+      {{ form.hidden_tag() }}
+
+      {% if form.tank_reason.errors %}
+        <div class="form-error" role="alert">
+          {% for e in form.tank_reason.errors %}
+            <p>{{ e }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      {% if not success and not failed and not failed_step%}
+        <fieldset class="choices">
+          <legend>Choose an action:</legend>
+          {% for subfield in form.tank_reason %}
+            <label class="choice">
+              {{ subfield }} {{ subfield.label.text }}
+            </label>
+          {% endfor %}
+        </fieldset>
+      {% endif %}
+
+      <div class="actions">
+        <input type="submit" value="Continue" class="continue-btn">
       </div>
-    {% endif %}
-
-    {% if not success and not failed %}
-      <fieldset class="choices">
-        <legend>Choose an action:</legend>
-        {% for subfield in form.tank_reason %}
-          <label class="choice">
-            {{ subfield }} {{ subfield.label.text }}
-          </label>
-        {% endfor %}
-      </fieldset>
-    {% endif %}
-
-    <div class="actions">
-      <input type="submit" value="Continue" class="continue-btn">
-    </div>
-  </form>
-</div>
+    </form>
+  </div>
         
-
-
-    </div>
 </div>
-
-<br>
-
-
-
+</div>
 
 
 {% endblock %}
